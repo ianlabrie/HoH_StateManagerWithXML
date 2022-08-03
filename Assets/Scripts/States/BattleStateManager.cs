@@ -22,7 +22,8 @@ namespace HoH_StateManagerTest.States
         
         public void LoopedStateComplete()
         {
-            Debug.Log($"{LoopedStates[_currentLoopedStateIndex].GetType().Name} Completed, starting next one");
+            // log statements should be pushed to a Util class
+            Debug.Log($"<Color=green>{LoopedStates[_currentLoopedStateIndex].GetType().Name} Completed</Color>, calling Run State on the next Looped State");
             _currentLoopedStateIndex = (_currentLoopedStateIndex + 1) % LoopedStates.Length;
             LoopedStates[_currentLoopedStateIndex].RunState();
         }
