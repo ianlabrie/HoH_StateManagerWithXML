@@ -5,28 +5,28 @@ using System.Threading.Tasks;
 
 namespace HoH_StateManagerTest.States
 {
-    internal class SpawnNextWave : State
+    internal class MinionsActivate : State
     {
         protected Action OnCompleteCallback;
 
         UnitSpawner _targetSpawner;
-        private string _title;
+        string _title;
 
-        public SpawnNextWave(Action onCompleteCallback, UnitSpawner spawner, string title)
+        public MinionsActivate(Action onCompleteCallback, UnitSpawner spawner, string title)
         {
             _title = title;
             OnCompleteCallback = onCompleteCallback;
             _targetSpawner = spawner;
         }
         
-        private async void StartNextWave(CancellationToken token, UnitSpawner spawner)
+        private async void StartActivateMinions(CancellationToken token, UnitSpawner targetSpawner)
         {
             // Is it still good to use this thread
             if (token.IsCancellationRequested)
                 return;
 
-            spawner.SpawnMinions(UnityEngine.Random.Range(1,3));
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            targetSpawner.MinionsActivate();
+            await Task.Delay(TimeSpan.FromSeconds(2));
             
             if (OnCompleteCallback != null)
                 OnCompleteCallback();
@@ -34,7 +34,7 @@ namespace HoH_StateManagerTest.States
 
         internal override void RunState()
         {
-            StartNextWave(ThreadingUtility.QuitToken, _targetSpawner);
+            StartActivateMinions(ThreadingUtility.QuitToken, _targetSpawner);
         }
 
         internal override string GetTitle()

@@ -20,6 +20,7 @@ namespace HoH_StateManagerTest.Data
                     stats.MinionType = row[0];
                     int.TryParse(row[1], out stats.Health);
                     int.TryParse(row[2], out stats.AttackRange);
+                    int.TryParse(row[3], out stats.Damage);
                     allStats.Add(stats);
                 }
             }
