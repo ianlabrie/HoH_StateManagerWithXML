@@ -37,10 +37,5 @@ namespace HoH_StateManagerTest.States
         {
             return $"Activating {_targetSpawner?.GetType().Name }";
         }
-
-        internal override Action OnCompleteCallback()
-        {
-            return _onCompleteCallback;
-        }
     }
 }
