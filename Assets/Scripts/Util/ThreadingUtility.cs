@@ -1,6 +1,6 @@
 ﻿/*******
 This makes it easy to see if the app is exiting so you can force your thread logic to stop - Ian L 8/3/22
-Found online, for more info Post 9 here: https://forum.unity.com/threads/non-stopping-async-method-after-in-editor-game-is-stopped.558283/
+Found online, Post #9: https://forum.unity.com/threads/non-stopping-async-method-after-in-editor-game-is-stopped.558283/
 *****/
 
 using System.Threading;
