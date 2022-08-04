@@ -1,6 +1,5 @@
 ﻿using HoH_StateManagerTest.Data;
 using HoH_StateManagerTest.States;
-using HoH_StateManagerTest.Units;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +16,7 @@ namespace HoH_StateManagerTest.Units
 
         List<MinionXML> MinionTypes;
         List<Minion> MinionHolder;
+
         void Awake()
         {
             if(UseAsPlayerSpawner) // could be refactored to not require this dependency
@@ -31,7 +31,7 @@ namespace HoH_StateManagerTest.Units
         internal void MinionsActivate()
         {
             foreach (Minion m in MinionHolder)
-                m.Activate();
+                m?.Activate();
         }
 
         public void SpawnMinions(int minionCount)
@@ -64,6 +64,9 @@ namespace HoH_StateManagerTest.Units
 
         internal static void UnitDied(Minion minion)
         {
+            if (!minion)
+                return;
+
             EnemySpawner.MinionHolder.Remove(minion);
             PlayerSpawner.MinionHolder.Remove(minion);
 
@@ -77,11 +80,7 @@ namespace HoH_StateManagerTest.Units
 
         internal static void DamageRandomUnit(Minion attackingUnit, UnitSpawner targetSpawner)
         {
-            Minion targetUnit = targetSpawner.GetRandomMinion();
-            if (targetUnit)
-                targetUnit.TakeDamage(attackingUnit.Damage);
-            else
-                Debug.Log("Info: No valid targets to attack");
+            targetSpawner?.GetRandomMinion()?.TakeDamage(attackingUnit.Damage);
         }
     }
 }

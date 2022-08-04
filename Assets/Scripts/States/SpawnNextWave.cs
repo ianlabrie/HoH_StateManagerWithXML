@@ -1,4 +1,4 @@
-using HoH_StateManagerTest.Units;
+﻿using HoH_StateManagerTest.Units;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,11 +9,9 @@ namespace HoH_StateManagerTest.States
     {
         protected Action OnCompleteCallback;
         readonly UnitSpawner _targetSpawner;
-        private readonly string _title;
 
-        public SpawnNextWave(Action onCompleteCallback, UnitSpawner spawner, string title)
+        public SpawnNextWave(Action onCompleteCallback, UnitSpawner spawner)
         {
-            _title = title;
             OnCompleteCallback = onCompleteCallback;
             _targetSpawner = spawner;
         }
@@ -37,7 +35,7 @@ namespace HoH_StateManagerTest.States
 
         internal override string GetTitle()
         {
-            return _title;
+            return $"Activating {_targetSpawner?.GetType().Name }";
         }
     }
 }
