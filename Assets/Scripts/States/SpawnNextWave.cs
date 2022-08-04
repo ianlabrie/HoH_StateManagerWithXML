@@ -7,12 +7,12 @@ namespace HoH_StateManagerTest.States
 {
     internal class SpawnNextWave : State
     {
-        protected Action OnCompleteCallback;
+        readonly Action _onCompleteCallback;
         readonly UnitSpawner _targetSpawner;
 
         public SpawnNextWave(Action onCompleteCallback, UnitSpawner spawner)
         {
-            OnCompleteCallback = onCompleteCallback;
+            _onCompleteCallback = onCompleteCallback;
             _targetSpawner = spawner;
         }
         
@@ -25,7 +25,7 @@ namespace HoH_StateManagerTest.States
             spawner.SpawnMinions(UnityEngine.Random.Range(1,3));
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            OnCompleteCallback?.Invoke();
+            _onCompleteCallback?.Invoke();
         }
 
         internal override void RunState()
@@ -36,6 +36,11 @@ namespace HoH_StateManagerTest.States
         internal override string GetTitle()
         {
             return $"Activating {_targetSpawner?.GetType().Name }";
+        }
+
+        internal override Action OnCompleteCallback()
+        {
+            return _onCompleteCallback;
         }
     }
 }

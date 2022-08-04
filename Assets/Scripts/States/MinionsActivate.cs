@@ -7,30 +7,29 @@ namespace HoH_StateManagerTest.States
 {
     internal class MinionsActivate : State
     {
-        protected Action OnCompleteCallback;
+        readonly Action _onCompleteCallback;
         readonly UnitSpawner _targetSpawner;
 
         public MinionsActivate(Action onCompleteCallback, UnitSpawner spawner)
         {
-            OnCompleteCallback = onCompleteCallback;
+            _onCompleteCallback = onCompleteCallback;
             _targetSpawner = spawner;
         }
         
-        private async void StartActivateMinions(CancellationToken token, UnitSpawner targetSpawner)
+        private async void StartActivateMinions(CancellationToken token, UnitSpawner targetSpawner, Action onCompleteCallback)
         {
-            // Is it still good to use this thread
             if (token.IsCancellationRequested)
                 return;
 
-            targetSpawner.MinionsActivate();
+            targetSpawner?.MinionsActivate();
             await Task.Delay(TimeSpan.FromSeconds(2));
 
-            OnCompleteCallback?.Invoke();
+            onCompleteCallback?.Invoke();
         }
 
         internal override void RunState()
         {
-            StartActivateMinions(ThreadingUtility.QuitToken, _targetSpawner);
+            StartActivateMinions(ThreadingUtility.QuitToken, _targetSpawner, _onCompleteCallback);
         }
 
         internal override string GetTitle()
