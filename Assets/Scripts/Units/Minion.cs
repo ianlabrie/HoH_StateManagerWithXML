@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using HoH_StateManagerTest.Data;
 using UnityEngine;
@@ -45,8 +45,8 @@ namespace HoH_StateManagerTest.Units
             // using Attack range as a % chance to attack
             bool UnitInRange = (UnityEngine.Random.Range(0, AttackRange)) > 0;
 
-            UnitSpawner targetSpawner = (SpawnerRef == UnitSpawner.player) ? UnitSpawner.enemy : UnitSpawner.player;
-            if (UnitInRange)
+            UnitSpawner targetSpawner = SpawnerRef?.GetOpposingSpawner();
+            if (UnitInRange && targetSpawner)
             {
                 Debug.Log($"{MinionType} is attacking towards the {targetSpawner.name}");
                 UnitSpawner.DamageRandomUnit(this, targetSpawner);

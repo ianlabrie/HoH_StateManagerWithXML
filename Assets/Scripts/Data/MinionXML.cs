@@ -1,4 +1,4 @@
-namespace HoH_StateManagerTest.Data
+﻿namespace HoH_StateManagerTest.Data
 {
     public struct MinionXML
     {

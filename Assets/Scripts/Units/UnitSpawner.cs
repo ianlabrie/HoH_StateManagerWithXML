@@ -9,17 +9,21 @@ namespace HoH_StateManagerTest.Units
 {
     public class UnitSpawner : MonoBehaviour
     {
-        public static UnitSpawner player;
-        public static UnitSpawner enemy;
+        public static UnitSpawner PlayerSpawner;
+        public static UnitSpawner EnemySpawner;
+
+        [SerializeField] bool UseAsPlayerSpawner;
         [SerializeField] Minion MinionPrefab;
+
         List<MinionXML> MinionTypes;
         List<Minion> MinionHolder;
         void Awake()
         {
-            if(enemy == null) // hack to set the two up
-                enemy = this;
-            else if(player == null)
-                player = this;
+            if(UseAsPlayerSpawner) // could be refactored to not require this dependency
+                PlayerSpawner = this;
+            else
+                EnemySpawner = this;
+
             MinionTypes = MinionLoaderXML.LoadData();
             MinionHolder = new List<Minion>();
         }
@@ -43,34 +47,41 @@ namespace HoH_StateManagerTest.Units
             }
         }
 
-        internal static void UnitDied(Minion minion)
-        {
-            enemy.MinionHolder.Remove(minion);
-            player.MinionHolder.Remove(minion);
-
-            if (enemy.MinionHolder.Count == 0)
-                BattleStateManager.BattleWon();
-            else if (player.MinionHolder.Count == 0)
-                BattleStateManager.BattleLost();
-
-            Destroy(minion.gameObject);
-        }
-
-        internal static void DamageRandomUnit(Minion attackingUnit, UnitSpawner targetPlayer)
-        {
-            Minion targetUnit = targetPlayer.GetRandomMinion();
-            if (targetUnit)
-                targetUnit.TakeDamage(attackingUnit.Damage);
-            else
-                Debug.Log("Info: No valid targets to attack");
-        }
-
         public Minion GetRandomMinion()
         {
             if (MinionHolder.Count == 0)
                 return null;
 
             return MinionHolder[Random.Range(0, MinionHolder.Count)];
+        }
+
+        internal UnitSpawner GetOpposingSpawner()
+        {
+            if (UseAsPlayerSpawner)
+                return EnemySpawner;
+            return PlayerSpawner;
+        }
+
+        internal static void UnitDied(Minion minion)
+        {
+            EnemySpawner.MinionHolder.Remove(minion);
+            PlayerSpawner.MinionHolder.Remove(minion);
+
+            if (EnemySpawner.MinionHolder.Count == 0)
+                BattleStateManager.BattleWon();
+            else if (PlayerSpawner.MinionHolder.Count == 0)
+                BattleStateManager.BattleLost();
+
+            Destroy(minion.gameObject);
+        }
+
+        internal static void DamageRandomUnit(Minion attackingUnit, UnitSpawner targetSpawner)
+        {
+            Minion targetUnit = targetSpawner.GetRandomMinion();
+            if (targetUnit)
+                targetUnit.TakeDamage(attackingUnit.Damage);
+            else
+                Debug.Log("Info: No valid targets to attack");
         }
     }
 }

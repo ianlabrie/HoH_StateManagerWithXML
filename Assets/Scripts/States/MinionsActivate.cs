@@ -8,9 +8,8 @@ namespace HoH_StateManagerTest.States
     internal class MinionsActivate : State
     {
         protected Action OnCompleteCallback;
-
-        UnitSpawner _targetSpawner;
-        string _title;
+        readonly UnitSpawner _targetSpawner;
+        readonly string _title;
 
         public MinionsActivate(Action onCompleteCallback, UnitSpawner spawner, string title)
         {
@@ -27,9 +26,8 @@ namespace HoH_StateManagerTest.States
 
             targetSpawner.MinionsActivate();
             await Task.Delay(TimeSpan.FromSeconds(2));
-            
-            if (OnCompleteCallback != null)
-                OnCompleteCallback();
+
+            OnCompleteCallback?.Invoke();
         }
 
         internal override void RunState()

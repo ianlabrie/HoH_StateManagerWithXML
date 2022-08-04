@@ -278,6 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8261bf3e9a2da14986550e6d66c402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UseAsPlayerSpawner: 1
   MinionPrefab: {fileID: 9163959790932554988, guid: e1d8dfa04b2471b4e97fb030a7757486, type: 3}
 --- !u!4 &1505544370
 Transform:
@@ -322,6 +323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8261bf3e9a2da14986550e6d66c402e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UseAsPlayerSpawner: 0
   MinionPrefab: {fileID: 9163959790932554988, guid: e1d8dfa04b2471b4e97fb030a7757486, type: 3}
 --- !u!4 &2104580775
 Transform:
