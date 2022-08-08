@@ -1,32 +1,28 @@
-﻿using HoH_StateManagerTest.Data;
+﻿using Assets.Scripts.Data;
 using UnityEngine;
 
-namespace HoH_StateManagerTest.Units
+namespace Assets.Scripts.Units
 {
     public class Minion : MonoBehaviour
     {
-        internal string MinionType { get => _minionType; }
-        private string _minionType;
-        internal int Health { get => _health; }
-        private int _health;
-        internal int AttackRange { get => _attackRange; }
-        private int _attackRange;
-        internal int Damage { get => _damage; }
-        private int _damage;
+        internal string MinionType { get; private set; }
+        internal int Health { get; private set; }
+        internal int AttackRange { get; private set; }
+        internal int Damage { get; private set; }
 
-        private UnitSpawner SpawnerRef;
-        internal void SetStatsFromXML(MinionXML loadedData, UnitSpawner spawner)
+        private UnitSpawner _spawnerRef;
+        internal void SetStatsFromXml(MinionXml loadedData, UnitSpawner spawner)
         {
-            _minionType = loadedData.MinionType;
-            _health = loadedData.Health;
-            _attackRange = loadedData.AttackRange;
-            _damage = loadedData.Damage;
-            SpawnerRef = spawner;
+            MinionType = loadedData.MinionType;
+            Health = loadedData.Health;
+            AttackRange = loadedData.AttackRange;
+            Damage = loadedData.Damage;
+            _spawnerRef = spawner;
         }
 
         internal void TakeDamage(int damageAmount)
         {
-            _health = Mathf.Max(0, Health - damageAmount);
+            Health = Mathf.Max(0, Health - damageAmount);
             if(Health == 0)
             {
                 Debug.Log($"{MinionType} has taken {damageAmount} and is now <b>dead</b>.");
@@ -39,10 +35,10 @@ namespace HoH_StateManagerTest.Units
         }
         internal virtual void Activate() // should be refactored, likely componentized
         {
-            UnitSpawner targetSpawner = SpawnerRef?.GetOpposingSpawner();
-            bool UnitInRange = targetSpawner && SimulateAttackRangeChance();
+            UnitSpawner targetSpawner = _spawnerRef?.GetOpposingSpawner();
+            bool unitInRange = targetSpawner && SimulateAttackRangeChance();
 
-            if (UnitInRange)
+            if (unitInRange)
             {
                 Debug.Log($"{MinionType} is attacking towards the {targetSpawner.name}");
                 UnitSpawner.DamageRandomUnit(this, targetSpawner);

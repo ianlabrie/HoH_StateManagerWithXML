@@ -1,36 +1,36 @@
-﻿using HoH_StateManagerTest.Data;
-using HoH_StateManagerTest.States;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Assets.Scripts.Data;
+using Assets.Scripts.States;
 using UnityEngine;
 
 // quick and dirty spawner to test the XML
-namespace HoH_StateManagerTest.Units
+namespace Assets.Scripts.Units
 {
     public class UnitSpawner : MonoBehaviour
     {
         public static UnitSpawner PlayerSpawner;
         public static UnitSpawner EnemySpawner;
 
-        [SerializeField] bool UseAsPlayerSpawner;
-        [SerializeField] Minion MinionPrefab;
+        [SerializeField] bool _useAsPlayerSpawner;
+        [SerializeField] Minion _minionPrefab;
 
-        List<MinionXML> MinionTypes;
-        List<Minion> MinionHolder;
+        List<MinionXml> _minionTypes;
+        List<Minion> _minionHolder;
 
         void Awake()
         {
-            if(UseAsPlayerSpawner) // could be refactored to not require this dependency
+            if(_useAsPlayerSpawner) // could be refactored to not require this dependency
                 PlayerSpawner = this;
             else
                 EnemySpawner = this;
 
-            MinionTypes = MinionLoaderXML.LoadData();
-            MinionHolder = new List<Minion>();
+            _minionTypes = MinionLoaderXml.LoadData();
+            _minionHolder = new List<Minion>();
         }
 
         internal void MinionsActivate()
         {
-            foreach (Minion m in MinionHolder)
+            foreach (Minion m in _minionHolder)
                 m?.Activate();
         }
 
@@ -39,25 +39,25 @@ namespace HoH_StateManagerTest.Units
             Debug.Log($"Spawning {minionCount} random minions"); // logging and random numbers should come from a Util class
             for (int i = 0; i < minionCount; i++)
             {
-                Minion minion = Instantiate(MinionPrefab, transform);
-                MinionXML type = MinionTypes[Random.Range(1, MinionTypes.Count)]; // start at 1 due to headers in the file
-                minion.SetStatsFromXML(type, this);
+                Minion minion = Instantiate(_minionPrefab, transform);
+                MinionXml type = _minionTypes[Random.Range(1, _minionTypes.Count)]; // start at 1 due to headers in the file
+                minion.SetStatsFromXml(type, this);
                 Debug.Log($"___New Minion___ Type: {minion.MinionType} Health: {minion.Health} Attack Range:{minion.AttackRange}");
-                MinionHolder.Add(minion);
+                _minionHolder.Add(minion);
             }
         }
 
         public Minion GetRandomMinion()
         {
-            if (MinionHolder.Count == 0)
+            if (_minionHolder.Count == 0)
                 return null;
 
-            return MinionHolder[Random.Range(0, MinionHolder.Count)];
+            return _minionHolder[Random.Range(0, _minionHolder.Count)];
         }
 
         internal UnitSpawner GetOpposingSpawner()
         {
-            if (UseAsPlayerSpawner)
+            if (_useAsPlayerSpawner)
                 return EnemySpawner;
             return PlayerSpawner;
         }
@@ -67,12 +67,12 @@ namespace HoH_StateManagerTest.Units
             if (!minion)
                 return;
 
-            EnemySpawner.MinionHolder.Remove(minion);
-            PlayerSpawner.MinionHolder.Remove(minion);
+            EnemySpawner._minionHolder.Remove(minion);
+            PlayerSpawner._minionHolder.Remove(minion);
 
-            if (EnemySpawner.MinionHolder.Count == 0)
+            if (EnemySpawner._minionHolder.Count == 0)
                 BattleStateManager.BattleWon();
-            else if (PlayerSpawner.MinionHolder.Count == 0)
+            else if (PlayerSpawner._minionHolder.Count == 0)
                 BattleStateManager.BattleLost();
 
             Destroy(minion.gameObject);

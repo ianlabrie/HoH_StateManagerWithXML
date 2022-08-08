@@ -1,9 +1,10 @@
-﻿using HoH_StateManagerTest.Units;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets.Scripts.Units;
+using Assets.Scripts.Util;
 
-namespace HoH_StateManagerTest.States
+namespace Assets.Scripts.States
 {
     internal class SpawnNextWave : State
     {
@@ -23,7 +24,7 @@ namespace HoH_StateManagerTest.States
                 return;
 
             spawner.SpawnMinions(UnityEngine.Random.Range(1,3));
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await Task.Delay(TimeSpan.FromSeconds(1), token);
 
             _onCompleteCallback?.Invoke();
         }

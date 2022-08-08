@@ -1,13 +1,13 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace HoH_StateManagerTest.Data
+namespace Assets.Scripts.Data
 {
-    public static class MinionLoaderXML
+    public static class MinionLoaderXml
     {
-        public static List<MinionXML> LoadData()
+        public static List<MinionXml> LoadData()
         {
-            List<MinionXML> allStats = new List<MinionXML>();
+            List<MinionXml> allStats = new List<MinionXml>();
             TextAsset minionStats = Resources.Load<TextAsset>("MinionStats");
 
             string[] data = minionStats.text.Split(new char[] { '\n' });
@@ -16,7 +16,7 @@ namespace HoH_StateManagerTest.Data
                 string[] row = data[i].Split(new char[] { ',' });
                 if (row[0] != "")
                 {
-                    MinionXML stats = new MinionXML();
+                    MinionXml stats = new MinionXml();
                     stats.MinionType = row[0];
                     int.TryParse(row[1], out stats.Health);
                     int.TryParse(row[2], out stats.AttackRange);

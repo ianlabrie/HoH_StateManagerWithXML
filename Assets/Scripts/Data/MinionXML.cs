@@ -1,6 +1,6 @@
-﻿namespace HoH_StateManagerTest.Data
+﻿namespace Assets.Scripts.Data
 {
-    public struct MinionXML
+    public struct MinionXml
     {
         public string MinionType;
         public int Health;

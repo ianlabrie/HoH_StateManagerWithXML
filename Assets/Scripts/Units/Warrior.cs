@@ -1,4 +1,4 @@
-namespace HoH_StateManagerTest.Units
+﻿namespace Assets.Scripts.Units
 {
     internal class Warrior : Minion
     {

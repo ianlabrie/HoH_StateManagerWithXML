@@ -1,9 +1,10 @@
-﻿using HoH_StateManagerTest.Units;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets.Scripts.Units;
+using Assets.Scripts.Util;
 
-namespace HoH_StateManagerTest.States
+namespace Assets.Scripts.States
 {
     internal class MinionsActivate : State
     {
@@ -22,7 +23,7 @@ namespace HoH_StateManagerTest.States
                 return;
 
             targetSpawner?.MinionsActivate();
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(2), token);
 
             onCompleteCallback?.Invoke();
         }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HoH_StateManagerTest.States
+﻿namespace Assets.Scripts.States
 {
     internal abstract class State
     {

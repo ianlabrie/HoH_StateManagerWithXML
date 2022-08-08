@@ -4,46 +4,47 @@ Found online, Post #9: https://forum.unity.com/threads/non-stopping-async-method
 *****/
 
 using System.Threading;
-using UnityEngine;
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
+using UnityEngine;
 
 #if UNITY_EDITOR
-[InitializeOnLoad]
-#endif
-public static class ThreadingUtility
+namespace Assets.Scripts.Util
 {
-    static readonly CancellationTokenSource quitSource;
-
-    public static CancellationToken QuitToken { get; }
-
-    public static SynchronizationContext UnityContext { get; private set; }
-
-    static ThreadingUtility()
+    [InitializeOnLoad]
+#endif
+    public static class ThreadingUtility
     {
-        quitSource = new CancellationTokenSource();
-        QuitToken = quitSource.Token;
-    }
+        static readonly CancellationTokenSource QuitSource;
+
+        public static CancellationToken QuitToken { get; }
+
+        public static SynchronizationContext UnityContext { get; private set; }
+
+        static ThreadingUtility()
+        {
+            QuitSource = new CancellationTokenSource();
+            QuitToken = QuitSource.Token;
+        }
 
 #if UNITY_EDITOR
-    [InitializeOnLoadMethod]
+        [InitializeOnLoadMethod]
 #endif
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void MainThreadInitialize()
-    {
-        UnityContext = SynchronizationContext.Current;
-        Application.quitting += quitSource.Cancel;
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void MainThreadInitialize()
+        {
+            UnityContext = SynchronizationContext.Current;
+            Application.quitting += QuitSource.Cancel;
 #if UNITY_EDITOR
-        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
-    }
+        }
 
 #if UNITY_EDITOR
-    static void OnPlayModeStateChanged(PlayModeStateChange state)
-    {
-        if (state == PlayModeStateChange.ExitingPlayMode)
-            quitSource.Cancel();
-    }
+        static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingPlayMode)
+                QuitSource.Cancel();
+        }
 #endif
+    }
 }
