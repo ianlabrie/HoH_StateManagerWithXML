@@ -10,7 +10,16 @@ namespace Assets.Scripts.States
         static int _currentLoopedStateIndex;
         static readonly Queue<State> PriorityStateQueue = new Queue<State>();
 
-        private void StartFirstState() => _loopedStates[0].RunState();
+        private void StartFirstState()
+        {
+            if (PriorityStateQueue.Count > 0)
+            {
+                PriorityStateQueue.Dequeue().RunState();
+                return;
+            }
+
+            _loopedStates[0].RunState();
+        }
 
         void Start()
         {
