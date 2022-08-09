@@ -2,6 +2,7 @@
 using Assets.Scripts.Data;
 using Assets.Scripts.States;
 using UnityEngine;
+using UnityEngine.Pool;
 
 // quick and dirty spawner to test the XML
 namespace Assets.Scripts.Units
@@ -17,6 +18,8 @@ namespace Assets.Scripts.Units
         List<MinionXml> _minionTypes;
         List<Minion> _minionHolder;
 
+        IObjectPool<Minion> _minionPool;
+
         void Awake()
         {
             if(_useAsPlayerSpawner) // could be refactored to not require this dependency
@@ -26,6 +29,30 @@ namespace Assets.Scripts.Units
 
             _minionTypes = MinionLoaderXml.LoadData();
             _minionHolder = new List<Minion>();
+
+            _minionPool = new ObjectPool<Minion>(CreateMinionFromPool, OnTakeMinionFromPool, OnReturnMinionToPool,
+                default, default, 6, 500);
+        }
+
+        private void OnReturnMinionToPool(Minion minion)
+        {
+            minion.ShowMinionWaitingInPool();
+            minion.gameObject.SetActive(false);
+        }
+
+        private void OnTakeMinionFromPool(Minion minion)
+        {
+            MinionXml type = _minionTypes[Random.Range(1, _minionTypes.Count)]; // start at 1 due to headers in the file
+            minion.SetStatsFromXml(type, this);
+            Debug.Log($"___New Minion___ Type: {minion.MinionType} Health: {minion.Health} Attack Range:{minion.AttackRange}");
+            minion.gameObject.SetActive(true);
+        }
+
+        private Minion CreateMinionFromPool()
+        {
+            var minion = Instantiate(_minionPrefab, transform);
+            minion.SetPool(_minionPool);
+            return minion;
         }
 
         internal void MinionsActivate()
@@ -39,10 +66,7 @@ namespace Assets.Scripts.Units
             Debug.Log($"Spawning {minionCount} random minions"); // logging and random numbers should come from a Util class
             for (int i = 0; i < minionCount; i++)
             {
-                Minion minion = Instantiate(_minionPrefab, transform);
-                MinionXml type = _minionTypes[Random.Range(1, _minionTypes.Count)]; // start at 1 due to headers in the file
-                minion.SetStatsFromXml(type, this);
-                Debug.Log($"___New Minion___ Type: {minion.MinionType} Health: {minion.Health} Attack Range:{minion.AttackRange}");
+                _minionPool.Get(out var minion);
                 _minionHolder.Add(minion);
             }
         }
@@ -69,13 +93,14 @@ namespace Assets.Scripts.Units
 
             EnemySpawner._minionHolder.Remove(minion);
             PlayerSpawner._minionHolder.Remove(minion);
+            
+            minion.Release();
 
             if (EnemySpawner._minionHolder.Count == 0)
                 BattleStateManager.BattleWon();
             else if (PlayerSpawner._minionHolder.Count == 0)
                 BattleStateManager.BattleLost();
 
-            Destroy(minion.gameObject);
         }
 
         internal static void DamageRandomUnit(Minion attackingUnit, UnitSpawner targetSpawner)

@@ -23,7 +23,7 @@ namespace Assets.Scripts.States
             if (token.IsCancellationRequested)
                 return;
 
-            spawner.SpawnMinions(UnityEngine.Random.Range(1,3));
+            spawner.SpawnMinions(UnityEngine.Random.Range(2,4));
             await Task.Delay(TimeSpan.FromSeconds(1), token);
 
             _onCompleteCallback?.Invoke();

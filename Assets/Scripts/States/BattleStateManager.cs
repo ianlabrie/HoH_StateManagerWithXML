@@ -1,14 +1,16 @@
-﻿using Assets.Scripts.Units;
+﻿using System.Collections.Generic;
+using Assets.Scripts.Units;
 using UnityEngine;
 
 namespace Assets.Scripts.States
 {
     public class BattleStateManager : MonoBehaviour
     {
-        [SerializeField] State[] _loopedStates;
+        static State[] _loopedStates;
+        static int _currentLoopedStateIndex;
+        static readonly Queue<State> PriorityStateQueue = new Queue<State>();
 
-        int _currentLoopedStateIndex = 0;
-        static bool _bStatesInterrupted;
+        private void StartFirstState() => _loopedStates[0].RunState();
 
         void Start()
         {
@@ -16,46 +18,43 @@ namespace Assets.Scripts.States
             StartFirstState();
         }
 
-        private void StartFirstState() => _loopedStates[0].RunState();
         private void SetupStates()
         {
-            var spawnPlayerUnits = new SpawnNextWave(LoopedStateComplete, UnitSpawner.PlayerSpawner);
-            var spawnEnemyUnits = new SpawnNextWave(LoopedStateComplete, UnitSpawner.EnemySpawner);
-            var playerMinionsActivate = new MinionsActivate(LoopedStateComplete, UnitSpawner.PlayerSpawner);
-            var enemyMinionsActivate = new MinionsActivate(LoopedStateComplete, UnitSpawner.EnemySpawner);
+            SpawnNextWave spawnPlayerUnits = new SpawnNextWave(StateComplete, UnitSpawner.PlayerSpawner);
+            SpawnNextWave spawnEnemyUnits = new SpawnNextWave(StateComplete, UnitSpawner.EnemySpawner);
+            MinionsActivate playerMinionsActivate = new MinionsActivate(StateComplete, UnitSpawner.PlayerSpawner);
+            MinionsActivate enemyMinionsActivate = new MinionsActivate(StateComplete, UnitSpawner.EnemySpawner);
+            
+            _loopedStates = new State[2];
+            _loopedStates[0] = playerMinionsActivate;
+            _loopedStates[1] = enemyMinionsActivate;
 
-            _loopedStates = new State[8]; // quick and dirty hard-coding the list
-            _loopedStates[0] = spawnPlayerUnits;
-            _loopedStates[1] = spawnEnemyUnits;
-            _loopedStates[2] = playerMinionsActivate;
-            _loopedStates[3] = enemyMinionsActivate;
-            _loopedStates[4] = playerMinionsActivate;
-            _loopedStates[5] = enemyMinionsActivate;
-            _loopedStates[6] = playerMinionsActivate;
-            _loopedStates[7] = enemyMinionsActivate;
+            PriorityStateQueue.Enqueue(spawnPlayerUnits);
+            PriorityStateQueue.Enqueue(spawnEnemyUnits);
         }
 
-        public void LoopedStateComplete()
+        public static void StateComplete()
         {
-            if (_bStatesInterrupted)
+            Debug.Log($"<Color=green>{_loopedStates[_currentLoopedStateIndex].GetTitle()} Completed</Color>");
+            if (PriorityStateQueue.Count > 0)
+            {
+                PriorityStateQueue.Dequeue().RunState();
                 return;
+            }
 
-            // log statements should be pushed to a Util class
-            Debug.Log($"<Color=green>{_loopedStates[_currentLoopedStateIndex].GetTitle()} Completed</Color>, calling Run State on the next Looped State");
+            Debug.Log("Calling Run State on the next Looped State");
             _currentLoopedStateIndex = (_currentLoopedStateIndex + 1) % _loopedStates.Length;
             _loopedStates[_currentLoopedStateIndex].RunState();
         }
 
         internal static void BattleWon()
         {
-            _bStatesInterrupted = true;
-            Debug.Log("<Color=red>Battle Won!</Color>");
+            PriorityStateQueue.Enqueue(new GameOver($"<Color=red> Battle Won! </Color>"));
         }
 
         internal static void BattleLost()
         {
-            _bStatesInterrupted = true;
-            Debug.Log("<Color=red>Battle Lost!</Color>");
+            PriorityStateQueue.Enqueue(new GameOver($"<Color=red>Battle Lost!</Color>"));
         }
     }
 }
